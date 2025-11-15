@@ -1,0 +1,375 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SANTA's E-COMMERCE WEB-PAGE</title>
+  <style>
+    /* Simple, clean styling for assignment demo */
+    :root{--accent:#2969a9;--muted:#666}
+    body{font-family:Inter,system-ui,Arial;margin:0;padding:0;color:#222;background:linear-gradient(135deg,#f5f7fa,#c3cfe2);}
+    header{background:linear-gradient(90deg,#0b74de,#005fb8);color:white;padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+    header h1{font-size:18px;margin:0}
+    nav a{color:white;text-decoration:none;margin-left:14px;font-weight:600}
+    .container{padding:18px;max-width:1100px;margin:18px auto}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:#fff;border:1px solid #e6e6e6;padding:14px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.03)}
+    .product{display:flex;gap:12px;align-items:center;border-bottom:1px dashed #eee;padding:10px 0}
+    img.prod{width:80px;height:80px;object-fit:cover;border-radius:6px}
+    .btn{display:inline-block;padding:8px 10px;border-radius:6px;border:0;background:var(--accent);color:white;cursor:pointer}
+    .outline{background:white;color:var(--accent);border:1px solid var(--accent)}
+    form{display:flex;flex-direction:column;gap:8px}
+    input,textarea,select{padding:8px;border-radius:6px;border:1px solid #ccc}
+    label{font-size:13px;color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+    footer{padding:12px;text-align:center;color:#777}
+    /* Responsive */
+    @media(max-width:900px){.grid{grid-template-columns:1fr}nav a{display:block;margin:8px 0}}
+    /* utility */
+    .hidden{display:none}
+    .flex{display:flex;gap:8px;align-items:center}
+    .hr{height:1px;background:#eee;margin:10px 0}
+  </style>
+</head>
+<body>
+  <!--
+    ASSIGNMENT NOTES & GITHUB UPLOAD STEPS (visible in this file):1. To use locally: Save this file as index.html and open in a browser.
+2. This is a single-file demo (HTML + CSS + JS) that implements:
+   - Navigation menu (Home, Product items, Contact Us, About Us)
+   - Registration & Login with input validation (using localStorage)
+   - Displays: Orders list, Wishlist, Comments & Reviews, Customer Care, Reporting
+   - Simple persistence using localStorage to simulate user flow.
+
+3. To upload to GitHub:
+   - Create a repo on GitHub (e.g., "ecommerce-assignment").
+   - In your local folder: git init
+     git add index.html
+     git commit -m "Initial commit - ecommerce assignment"
+     git branch -M main
+     git remote add origin https://github.com/<your-username>/<repo>.git
+     git push -u origin main
+
+4. If you want separate files, I can split into index.html / styles.css / app.js — tell me.
+
+-->
+
+  <header>
+    <h1>SANTA's E-COMMERCE WEB-PAGE</h1>
+    <nav>
+      <a href="#home" data-nav>Home</a>
+      <a href="#products" data-nav>Product items</a>
+      <a href="#contact" data-nav>Contact Us</a>
+      <a href="#about" data-nav>About Us</a>
+      <a href="#login" data-nav id="nav-auth">Login / Register</a>
+    </nav>
+  </header>  <main class="container">
+    <section id="home" class="card">
+      <h2>Welcome</h2>
+      <p class="small">This is a simplified e-commerce portal demo for your assignment. Use the menu to navigate. Login/register to save wishlist/orders locally.</p>
+    </section><div class="grid" style="margin-top:14px">
+  <div>
+    <section id="products" class="card">
+      <h3>Product items</h3>
+      <div id="product-list"></div>
+    </section>
+
+    <section id="reviews" class="card" style="margin-top:12px">
+      <h3>Comments & Reviews</h3>
+      <div id="reviews-list"></div>
+      <div class="hr"></div>
+      <form id="review-form">
+        <label for="review-text">Add a review (required)</label>
+        <textarea id="review-text" required placeholder="Write your review"></textarea>
+        <label for="review-rating">Rating</label>
+        <select id="review-rating">
+          <option value="5">5 - Excellent</option>
+          <option value="4">4 - Very good</option>
+          <option value="3">3 - Good</option>
+          <option value="2">2 - Fair</option>
+          <option value="1">1 - Poor</option>
+        </select>
+        <button class="btn" type="submit">Submit Review</button>
+      </form>
+    </section>
+
+    <section id="about" class="card" style="margin-top:12px">
+      <h3>About Us</h3>
+      <p class="small">Demo portal built for Assignment 3. Includes forms validation and simple UI for orders, wishlist, customer care & reporting.</p>
+     
+      <ol class="small">
+       
+      </ol>
+    </section>
+
+  </div>
+
+  <aside>
+    <section id="auth" class="card">
+      <h3 id="auth-title">Login</h3>
+
+      <form id="login-form">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" required />
+        <label for="login-pass">Password</label>
+        <input id="login-pass" type="password" required />
+        <div class="flex">
+          <button class="btn" type="submit">Login</button>
+          <button class="btn outline" id="show-register" type="button">Register</button>
+        </div>
+        <p id="auth-msg" class="small" style="margin-top:8px"></p>
+      </form>
+
+      <form id="register-form" class="hidden">
+        <h4>Create account</h4>
+        <label for="r-name">Full name</label>
+        <input id="r-name" required />
+        <label for="r-email">Email</label>
+        <input id="r-email" type="email" required />
+        <label for="r-pass">Password (min 6 chars)</label>
+        <input id="r-pass" type="password" required />
+        <label for="r-phone">Phone (optional)</label>
+        <input id="r-phone" type="tel" />
+        <div class="flex">
+          <button class="btn" type="submit">Register</button>
+          <button class="btn outline" id="show-login" type="button">Back to Login</button>
+        </div>
+        <p id="reg-msg" class="small"></p>
+      </form>
+
+    </section>
+
+    <section id="orders" class="card" style="margin-top:12px">
+      <h3>Orders</h3>
+      <div id="orders-list" class="small">(place orders from product list)</div>
+    </section>
+
+    <section id="wishlist" class="card" style="margin-top:12px">
+      <h3>Wishlist</h3>
+      <div id="wishlist-list" class="small">(add items to wishlist)</div>
+    </section>
+
+    <section id="contact" class="card" style="margin-top:12px">
+      <h3>Customer Care / Reporting</h3>
+      <form id="contact-form">
+        <label for="issue-subject">Subject</label>
+        <input id="issue-subject" required />
+        <label for="issue-desc">Describe your issue</label>
+        <textarea id="issue-desc" required></textarea>
+        <button class="btn" type="submit">Send to Customer Care</button>
+      </form>
+      <div class="hr"></div>
+      <div id="reports" class="small"></div>
+    </section>
+  </aside>
+</div>
+
+  </main>  <footer>
+    Assignment 3 — E-Commerce portal demo • Built for quick submission
+  </footer>  <script>
+    // Simple in-memory products
+    const products = [
+      {id:1,title:'Wireless Headphones',price:1199,img:'https://source.unsplash.com/80x80/?headphones'},
+      {id:2,title:'Smartphone - 6.5"',price:13999,img:'https://source.unsplash.com/80x80/?smartphone'},
+      {id:3,title:'Gaming Mouse',price:799,img:'https://source.unsplash.com/80x80/?gaming,mouse'},
+      {id:4,title:'Backpack',price:1299,img:'https://source.unsplash.com/80x80/?backpack'},
+    ];
+
+    // Utility localStorage helpers
+    const ls = {
+      get(k, def){ try{ return JSON.parse(localStorage.getItem(k)) ?? def }catch(e){return def} },
+      set(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
+    }
+
+    // App state
+    let currentUser = ls.get('currentUser', null);
+    let users = ls.get('users', []);
+    let wishlist = ls.get('wishlist', {}); // map userEmail -> [productIds]
+    let orders = ls.get('orders', {}); // map userEmail -> [{productId, date}]
+    let reviews = ls.get('reviews', []);
+    let reports = ls.get('reports', []);
+
+    // Elements
+    const productListEl = document.getElementById('product-list');
+    const wishlistListEl = document.getElementById('wishlist-list');
+    const ordersListEl = document.getElementById('orders-list');
+    const reviewsListEl = document.getElementById('reviews-list');
+    const reportsEl = document.getElementById('reports');
+
+    // Render products
+    function renderProducts(){
+      productListEl.innerHTML = '';
+      products.forEach(p => {
+        const div = document.createElement('div'); div.className='product';
+        div.innerHTML = `
+          <img class="prod" src="${p.img}" alt="${p.title}">
+          <div style="flex:1">
+            <strong>${p.title}</strong>
+            <div class="small">₹ ${p.price}</div>
+          </div>
+          <div style="text-align:right">
+            <button class="btn" data-buy="${p.id}">Buy</button>
+            <button class="btn outline" data-wish="${p.id}">Wishlist</button>
+          </div>
+        `;
+        productListEl.appendChild(div);
+      })
+    }
+
+    function renderWishlist(){
+      const list = (currentUser && wishlist[currentUser.email]) || [];
+      if(!currentUser) { wishlistListEl.innerHTML='<div class="small">Login to see wishlist</div>'; return }
+      if(list.length===0) { wishlistListEl.innerHTML='<div class="small">Wishlist empty</div>'; return }
+      wishlistListEl.innerHTML = '';
+      list.forEach(id=>{
+        const p = products.find(x=>x.id===id);
+        const row = document.createElement('div'); row.className='small';
+        row.innerHTML = `${p.title} • ₹${p.price} <button class='btn outline' data-wish-remove='${id}'>Remove</button>`;
+        wishlistListEl.appendChild(row);
+      })
+    }
+
+    function renderOrders(){
+      const list = (currentUser && orders[currentUser.email]) || [];
+      if(!currentUser) { ordersListEl.innerHTML='<div class="small">Login to see orders</div>'; return }
+      if(list.length===0) { ordersListEl.innerHTML='<div class="small">No orders yet</div>'; return }
+      ordersListEl.innerHTML = '';
+      list.forEach(o=>{
+        const p = products.find(x=>x.id===o.productId);
+        const row = document.createElement('div'); row.className='small';
+        row.innerHTML = `${p.title} • ₹${p.price} • <span class='small'>${new Date(o.date).toLocaleString()}</span>`;
+        ordersListEl.appendChild(row);
+      })
+    }
+
+    function renderReviews(){
+      if(reviews.length===0){ reviewsListEl.innerHTML='<div class="small">No reviews yet</div>'; return }
+      reviewsListEl.innerHTML='';
+      reviews.slice().reverse().forEach(r=>{
+        const d = document.createElement('div'); d.className='small';
+        d.style.borderBottom='1px dashed #eee'; d.style.padding='8px 0';
+        d.innerHTML = `<strong>${escapeHtml(r.name || 'Anonymous')}</strong> — ${r.rating}/5<br>${escapeHtml(r.text)}`;
+        reviewsListEl.appendChild(d);
+      })
+    }
+
+    function renderReports(){
+      if(reports.length===0){ reportsEl.innerHTML='<div class="small">No reports yet</div>'; return }
+      reportsEl.innerHTML='';
+      reports.slice().reverse().forEach(r=>{
+        const d = document.createElement('div'); d.className='small'; d.style.padding='6px 0';
+        d.innerHTML = `<strong>${escapeHtml(r.subject)}</strong> — ${escapeHtml(r.by||'Guest')}<div class='small'>${escapeHtml(r.desc)}</div>`;
+        reportsEl.appendChild(d);
+      })
+    }
+
+    // Event handlers
+    document.addEventListener('click', e=>{
+      if(e.target.dataset.buy){ handleBuy(parseInt(e.target.dataset.buy)) }
+      if(e.target.dataset.wish){ handleWishlistAdd(parseInt(e.target.dataset.wish)) }
+      if(e.target.dataset.wishRemove){ handleWishlistRemove(parseInt(e.target.dataset.wishRemove)) }
+    })
+
+    function handleBuy(id){
+      if(!currentUser){ alert('Please login to place order.'); return }
+      orders[currentUser.email] = orders[currentUser.email] || [];
+      orders[currentUser.email].push({productId:id,date:new Date().toISOString()});
+      ls.set('orders',orders); renderOrders(); alert('Order placed!')
+    }
+
+    function handleWishlistAdd(id){
+      if(!currentUser){ alert('Please login to add to wishlist.'); return }
+      wishlist[currentUser.email] = wishlist[currentUser.email] || [];
+      if(!wishlist[currentUser.email].includes(id)) wishlist[currentUser.email].push(id);
+      ls.set('wishlist',wishlist); renderWishlist(); alert('Added to wishlist')
+    }
+
+    function handleWishlistRemove(id){
+      if(!currentUser) return;
+      wishlist[currentUser.email] = (wishlist[currentUser.email] || []).filter(x=>x!==id);
+      ls.set('wishlist',wishlist); renderWishlist();
+    }
+
+    // Simple auth: register & login
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const showRegister = document.getElementById('show-register');
+    const showLogin = document.getElementById('show-login');
+    const authMsg = document.getElementById('auth-msg');
+    const regMsg = document.getElementById('reg-msg');
+    const authTitle = document.getElementById('auth-title');
+
+    showRegister.addEventListener('click', ()=>{ loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); authTitle.textContent='Register' })
+    showLogin.addEventListener('click', ()=>{ loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); authTitle.textContent='Login' })
+
+    registerForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      const name=document.getElementById('r-name').value.trim();
+      const email=document.getElementById('r-email').value.trim().toLowerCase();
+      const pass=document.getElementById('r-pass').value;
+      const phone=document.getElementById('r-phone').value.trim();
+      // validation
+      if(!name || !validateEmail(email) || pass.length<6){ regMsg.textContent='Please provide valid details (email + password min 6 chars)'; return }
+      if(users.find(u=>u.email===email)){ regMsg.textContent='Email already registered'; return }
+      const u={name,email,pass,phone}; users.push(u); ls.set('users',users); regMsg.textContent='Registered! You can login now.'; registerForm.reset();
+    })
+
+    loginForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      const email=document.getElementById('login-email').value.trim().toLowerCase();
+      const pass=document.getElementById('login-pass').value;
+      const found = users.find(u=>u.email===email && u.pass===pass);
+      if(!found){ authMsg.textContent='Invalid credentials'; return }
+      currentUser = {name:found.name,email:found.email}; ls.set('currentUser',currentUser); document.getElementById('auth-msg').textContent='Logged in as '+found.name; updateAuthUI(); renderWishlist(); renderOrders();
+    })
+
+    function updateAuthUI(){
+      const navAuth = document.getElementById('nav-auth');
+      if(currentUser){ navAuth.textContent = currentUser.name + ' (Logout)'; navAuth.onclick = ()=>{ logout() } }
+      else { navAuth.textContent = 'Login / Register'; navAuth.onclick = null }
+    }
+
+    function logout(){ currentUser=null; ls.set('currentUser',null); document.getElementById('auth-msg').textContent='Logged out'; updateAuthUI(); renderWishlist(); renderOrders(); }
+
+    // Review form
+    document.getElementById('review-form').addEventListener('submit', e=>{
+      e.preventDefault();
+      const text = document.getElementById('review-text').value.trim();
+      const rating = parseInt(document.getElementById('review-rating').value);
+      if(!text) return alert('Review text required');
+      reviews.push({text,rating,name: currentUser? currentUser.name : 'Guest',date:new Date().toISOString()}); ls.set('reviews',reviews); document.getElementById('review-form').reset(); renderReviews();
+    })
+
+    // Contact/Report form
+    document.getElementById('contact-form').addEventListener('submit', e=>{
+      e.preventDefault();
+      const subject = document.getElementById('issue-subject').value.trim();
+      const desc = document.getElementById('issue-desc').value.trim();
+      if(!subject||!desc) return alert('Please fill subject and description');
+      const rep = {subject,desc,by:currentUser?currentUser.name:'Guest',date:new Date().toISOString()};
+      reports.push(rep); ls.set('reports',reports); document.getElementById('contact-form').reset(); renderReports(); alert('Report submitted. Our customer care will reach out.');
+    })
+
+    // Helpers
+    function validateEmail(email){ return /^[\w-.]+@[\w-]+\.[a-zA-Z]{2,}$/.test(email) }
+    function escapeHtml(str){ return (str+'').replace(/[&<>"']/g, function(s){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s] }) }
+
+    // Init: load from localStorage
+    (function init(){
+      users = ls.get('users',users);
+      currentUser = ls.get('currentUser',currentUser);
+      wishlist = ls.get('wishlist',wishlist);
+      orders = ls.get('orders',orders);
+      reviews = ls.get('reviews',reviews);
+      reports = ls.get('reports',reports);
+      renderProducts(); renderWishlist(); renderOrders(); renderReviews(); renderReports(); updateAuthUI();
+    })();
+
+    // Smooth navigation
+    document.querySelectorAll('[data-nav]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        e.preventDefault(); const id = a.getAttribute('href').substr(1); document.getElementById(id).scrollIntoView({behavior:'smooth'});
+      })
+    })
+  </script></body>
+</html>
